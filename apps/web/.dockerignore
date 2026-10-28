@@ -1,4 +1,5 @@
-__pycache__/
-*.pyc
-.venv/
-
+# Send only the files needed at runtime.
+*
+!app.py
+!requirements.txt
+!templates/
