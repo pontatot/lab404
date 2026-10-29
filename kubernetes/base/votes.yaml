@@ -18,10 +18,22 @@ spec:
         app.kubernetes.io/component: backend
         app.kubernetes.io/part-of: lab404
     spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: votes
           image: ghcr.io/leofvo/lab404-votes:latest
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
           env:
             - name: VALKEY_ADDR
               value: valkey:6379
@@ -36,6 +48,13 @@ spec:
               value: http://otel-collector.observability.svc.cluster.local:4318
             - name: OTEL_EXPORTER_OTLP_INSECURE
               value: "true"
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 64Mi
           ports:
             - name: http
               containerPort: 8081
