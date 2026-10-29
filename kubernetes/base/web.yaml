@@ -49,6 +49,13 @@ spec:
               value: "true"
             - name: GUNICORN_CMD_ARGS
               value: --no-control-socket
+          resources:
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              cpu: 500m
+              memory: 192Mi
           ports:
             - name: http
               containerPort: 8080
