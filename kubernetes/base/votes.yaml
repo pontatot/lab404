@@ -29,6 +29,11 @@ spec:
         - name: votes
           image: ghcr.io/leofvo/lab404-votes:latest
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
           env:
             - name: VALKEY_ADDR
               value: valkey:6379
