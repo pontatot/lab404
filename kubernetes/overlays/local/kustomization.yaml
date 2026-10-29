@@ -1,12 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../../base
+- ../../base
 images:
-  - name: ghcr.io/leofvo/lab404-web
-    newName: ghcr.io/pontatot/lab404-web
-    newTag: latest
-  - name: ghcr.io/leofvo/lab404-votes
-    newName: ghcr.io/pontatot/lab404-votes
-    newTag: latest
-
+- digest: sha256:449fba4f2bc95a8ca117f349df05d89fcdb386d1dfa179e5852886e3721aa85c
+  name: ghcr.io/leofvo/lab404-votes
+  newName: ghcr.io/pontatot/lab404-votes
+- digest: sha256:3c8863ed06ce9219e3756bdb25bbdee267a358e465503f67fbcf010d73b01cd4
+  name: ghcr.io/leofvo/lab404-web
+  newName: ghcr.io/pontatot/lab404-web
