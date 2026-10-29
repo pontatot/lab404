@@ -1,0 +1,51 @@
+apiVersion: policies.kyverno.io/v1
+kind: NamespacedValidatingPolicy
+metadata:
+  name: require-image-digest
+spec:
+  validationActions: [Deny]
+  failurePolicy: Fail
+  autogen:
+    podControllers:
+      controllers: [deployments, statefulsets, daemonsets, jobs, cronjobs]
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [pods]
+  variables:
+    - name: containers
+      expression: >-
+        object.spec.containers +
+        object.spec.?initContainers.orValue([]) +
+        object.spec.?ephemeralContainers.orValue([])
+    - name: mutable
+      expression: >-
+        variables.containers.filter(c, !c.image.matches('@sha256:[a-f0-9]{64}$')).map(c, c.image)
+  validations:
+    - expression: size(variables.mutable) == 0
+      messageExpression: >-
+        'images must be pinned by digest: ' + variables.mutable.join(', ')
+---
+apiVersion: policies.kyverno.io/v1
+kind: NamespacedValidatingPolicy
+metadata:
+  name: require-image-digest-ephemeral
+spec:
+  validationActions: [Deny]
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: [v1]
+        operations: [UPDATE]
+        resources: [pods/ephemeralcontainers]
+  variables:
+    - name: mutable
+      expression: >-
+        object.spec.?ephemeralContainers.orValue([]).filter(c, !c.image.matches('@sha256:[a-f0-9]{64}$')).map(c, c.image)
+  validations:
+    - expression: size(variables.mutable) == 0
+      messageExpression: >-
+        'images must be pinned by digest: ' + variables.mutable.join(', ')

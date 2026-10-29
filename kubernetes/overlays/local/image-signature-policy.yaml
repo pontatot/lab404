@@ -1,0 +1,72 @@
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-lab404-images
+spec:
+  validationActions: [Deny]
+  failurePolicy: Fail
+  validationConfigurations:
+    mutateDigest: false
+    verifyDigest: true
+    required: true
+  autogen:
+    podControllers:
+      controllers: [deployments, statefulsets, daemonsets, jobs, cronjobs]
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE]
+        resources: [pods]
+  matchImageReferences:
+    - glob: "ghcr.io/pontatot/lab404-web:*"
+    - glob: "ghcr.io/pontatot/lab404-web@*"
+    - glob: "ghcr.io/pontatot/lab404-votes:*"
+    - glob: "ghcr.io/pontatot/lab404-votes@*"
+  attestors:
+    - name: github
+      cosign:
+        keyless:
+          identities:
+            - issuer: https://token.actions.githubusercontent.com
+              subject: https://github.com/pontatot/lab404/.github/workflows/images.yml@refs/heads/main
+  validations:
+    - expression: >-
+        images.all(kind, images[kind].all(image,
+          verifyImageSignatures(image, [attestors.github]) > 0))
+      message: images must be signed by the lab404 workflow on main
+---
+apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-lab404-images-ephemeral
+spec:
+  validationActions: [Deny]
+  failurePolicy: Fail
+  validationConfigurations:
+    mutateDigest: false
+    verifyDigest: true
+    required: true
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: [v1]
+        operations: [UPDATE]
+        resources: [pods/ephemeralcontainers]
+  matchImageReferences:
+    - glob: "ghcr.io/pontatot/lab404-web:*"
+    - glob: "ghcr.io/pontatot/lab404-web@*"
+    - glob: "ghcr.io/pontatot/lab404-votes:*"
+    - glob: "ghcr.io/pontatot/lab404-votes@*"
+  attestors:
+    - name: github
+      cosign:
+        keyless:
+          identities:
+            - issuer: https://token.actions.githubusercontent.com
+              subject: https://github.com/pontatot/lab404/.github/workflows/images.yml@refs/heads/main
+  validations:
+    - expression: >-
+        images.all(kind, images[kind].all(image,
+          verifyImageSignatures(image, [attestors.github]) > 0))
+      message: images must be signed by the lab404 workflow on main
