@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - ../../base
 - image-signature-policy.yaml
+- valkey-sealed-secret.yaml
 images:
 - digest: sha256:449fba4f2bc95a8ca117f349df05d89fcdb386d1dfa179e5852886e3721aa85c
   name: ghcr.io/leofvo/lab404-votes
