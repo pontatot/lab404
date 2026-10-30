@@ -9,3 +9,4 @@ resources:
   - gateway.yaml
   - nginx.yaml
   - image-policy.yaml
+  - network-policies.yaml
