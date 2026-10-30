@@ -43,3 +43,9 @@ helmCharts:
     includeCRDs: true
     valuesInline:
       fullnameOverride: sealed-secrets-controller
+  - name: falco
+    repo: https://falcosecurity.github.io/charts
+    version: 9.2.2
+    releaseName: falco
+    namespace: falco
+    valuesFile: falco-values.yaml
