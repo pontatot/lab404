@@ -16,3 +16,13 @@ falco:
   json_output: true
   stdout_output:
     enabled: true
+
+tolerations:
+  - key: node-role.kubernetes.io/master
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/control-plane
+    effect: NoSchedule
+  - key: workload
+    operator: Equal
+    value: stateful
+    effect: NoSchedule
