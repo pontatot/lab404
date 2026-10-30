@@ -1,0 +1,18 @@
+driver:
+  kind: modern_ebpf
+  modernEbpf:
+    leastPrivileged: true
+
+# Use the rules bundled with the pinned Falco image instead of fetching
+# floating rule artifacts at runtime.
+falcoctl:
+  artifact:
+    install:
+      enabled: false
+    follow:
+      enabled: false
+
+falco:
+  json_output: true
+  stdout_output:
+    enabled: true
