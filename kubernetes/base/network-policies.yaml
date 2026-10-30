@@ -141,3 +141,18 @@ spec:
       ports:
         - protocol: TCP
           port: 6379
+---
+# Nginx stays publicly exposed for the deferred exposure exercise.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nginx-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: nginx
+  policyTypes: [Ingress]
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 80
